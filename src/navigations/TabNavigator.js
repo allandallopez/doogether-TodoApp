@@ -47,6 +47,7 @@ const TabNavigator = createMaterialBottomTabNavigator(
     activeColor: '#00bfff',
     barStyle: {backgroundColor: '#FFF'},
   },
+  
 );
 
 export default TabNavigator;
