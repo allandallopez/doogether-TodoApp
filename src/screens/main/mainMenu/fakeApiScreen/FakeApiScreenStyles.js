@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#34495e',
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: normalize(10)
   },
   titleHeader: {
     fontSize: 30,

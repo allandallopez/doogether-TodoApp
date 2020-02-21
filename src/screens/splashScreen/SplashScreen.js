@@ -12,7 +12,7 @@ class SplashScreen extends Component {
   render() {
     return (
       <LinearGradient
-        colors={['#00d2d3', '#01a3a4']}
+        colors={['#48dbfb', '#ee5253']}
         style={Styles.linearGradient}>
         <StatusBar backgroundColor="#00d2d3" barStyle="light-content" />
         <Image

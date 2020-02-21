@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Styles from './FakeApiScreenStyles';
 import axios from 'axios';
+import normalize from 'react-native-normalize';
 
 class FakeApiScreen extends Component {
   constructor() {
@@ -63,11 +64,11 @@ class FakeApiScreen extends Component {
               keyExtractor={item => String(item.id)}
               renderItem={({item}) => {
                 return (
-                  <View style={{backgroundColor: '#3498db', marginBottom: 10}}>
-                    <Text style={{fontSize: 16, fontWeight: '600'}}>
+                  <View style={{backgroundColor: '#3498db', marginBottom: 10, borderRadius: 20, flexDirection: 'column'}}>
+                    <Text style={{fontSize: 17, fontWeight: '700', marginLeft: normalize(13)}}>
                       {item.title}
                     </Text>
-                    <Text style={{fontSize: 13}}>{item.body}</Text>
+                    <Text style={{fontSize: 13, marginLeft: normalize(13)}}>{item.body}</Text>
                   </View>
                 );
               }}

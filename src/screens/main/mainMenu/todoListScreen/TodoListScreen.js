@@ -5,8 +5,6 @@ import {
   Text,
   TouchableOpacity,
   StatusBar,
-  TouchableHighlight,
-  TextInput,
   Modal,
   Alert,
 } from 'react-native';
@@ -15,7 +13,8 @@ import moment from 'moment';
 import Service from '../../../../utils/TodoServices';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import {h, customFont} from '../../../../components/variable/dimension';
+import Styles from './TodolistScreenStyles';
+import {customFont} from '../../../../components/variable/dimension';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
 import {CheckBox} from 'react-native-elements';
@@ -47,12 +46,9 @@ class TodoScreen extends Component {
   getAllTodo = () => {
     this.retrieveItem('todos')
       .then(data => {
-        console.log('here', data);
         this.setState({todos: data});
-        //this callback is executed when your Promise is resolved
       })
       .catch(error => {
-        //this callback is executed when your Promise is rejected
         console.log('Promise is rejected with error: ' + error);
       });
   };
@@ -103,28 +99,6 @@ class TodoScreen extends Component {
     });
   };
 
-  clearState = async () => {
-    this.setState({
-      todo: '',
-    });
-    await AsyncStorage.removeItem('Todo');
-  };
-
-  getTodo = async () => {
-    try {
-      const value = await AsyncStorage.getItem('Todo');
-      if (value) {
-        this.setState({
-          todos: JSON.parse(value),
-        });
-      } else {
-        Alert.alert('Belum ada data');
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   gotoAddTodo = () => {
     this.props.navigation.navigate('AddTodo');
   };
@@ -138,29 +112,39 @@ class TodoScreen extends Component {
     if (this.state.isModalVisible) {
       modal = (
         <Modal
-          animationType="slide"
+          style={{height: 50, width: 50}}
+          animationType="fade"
           transparent={false}
           visible={this.state.modalVisible}
           onRequestClose={() => {
             this.setState({isModalVisible: false});
           }}>
-          <View style={{marginTop: 22}}>
-            <View>
-              <Text>{this.state.selectedData.title}</Text>
+          <View style={Styles.container}>
+            <View
+              style={{marginBottom: normalize(20), marginTop: normalize(7)}}>
+              <Text style={{fontSize: 30, fontWeight: '700'}}>Detail List</Text>
+            </View>
+            <View style={Styles.modalContainer}>
+              <Text style={Styles.modalTitle}>
+                {this.state.selectedData.title}
+              </Text>
+              <Text style={Styles.modalDescription}>
+                {this.state.selectedData.description}
+              </Text>
             </View>
           </View>
         </Modal>
       );
     }
-    const {todo, todos} = this.state;
-    console.log(todos);
+    const {todos} = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
         <StatusBar barStyle="dark-content" backgroundColor="transparent" />
-        <ScrollView
-          style={{
-            padding: '2%',
-          }}>
+        <View style={Styles.headerContainer}>
+          <Text style={Styles.titleHeader}>Hii John :)</Text>
+          <Text style={Styles.titleHeader}>Have a nice day !!! </Text>
+        </View>
+        <ScrollView>
           {todos &&
             todos.map((todo, index) => (
               <TouchableOpacity
@@ -168,54 +152,40 @@ class TodoScreen extends Component {
                 onPress={() => this.showModal(todo.id)}
                 style={{
                   backgroundColor: todo.isChecked ? '#c5f6fa' : '#dfe6e9',
-                  marginBottom: 10,
+                  marginBottom: normalize(10),
                   flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  borderRadius: 12,
-                  overflow: 'hidden',
+                  borderRadius: normalize(12),
                 }}>
+                <CheckBox
+                  checked={todo.isChecked}
+                  checkedColor="#273c75"
+                  onPress={() => this.updateTodo(todo.id)}
+                />
                 <View
-                  style={{width: '79%', padding: 10, flexDirection: 'column'}}>
+                  style={{width: '60%', padding: 10, flexDirection: 'column'}}>
                   <Text
-                    style={{
-                      color: '#2d3436',
-                      textAlign: 'justify',
-                    }}>
+                    style={{color: '#2d3436'}}>
                     {todo.title}
                   </Text>
                   <Text style={{fontSize: 12, color: '#888888', marginTop: 10}}>
                     {moment(todo.created_time).format('DD-MM-YYYY hh:mm')}
                   </Text>
                 </View>
-
-                <CheckBox
-                  checked={todo.isChecked}
-                  checkedColor="#273c75"
-                  onPress={() => this.updateTodo(todo.id)}
-                />
-
-                <TouchableOpacity
-                  style={{
-                    width: '10%',
-                    backgroundColor: '#d63031',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                  onPress={() => {
-                    Alert.alert(
-                      'Delete',
-                      `Are you sure want to delete todo ${todo.title}`,
-                      [
-                        {
-                          text: 'Cancel',
-                          onPress: () => console.log('Cancel Pressed'),
-                          style: 'cancel',
-                        },
-                        {text: 'OK', onPress: () => this.deleteTodo(todo.id)},
-                      ],
-                      {cancelable: false},
-                    );
-                  }}>
+                <TouchableOpacity style={Styles.deleteBtn} onPress={() => {
+                  Alert.alert(
+                    'Delete',
+                    `Are you sure want to delete todo ${todo.title}`,
+                    [
+                      {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                      },
+                      {text: 'OK', onPress: () => this.deleteTodo(todo.id)},
+                    ],
+                    {cancelable: false},
+                  );
+                }}>
                   <Icon
                     name="trash-alt"
                     style={{color: '#fff', ...customFont(50)}}
@@ -225,18 +195,7 @@ class TodoScreen extends Component {
             ))}
         </ScrollView>
         {modal}
-        <TouchableOpacity
-          style={{
-            height: '9%',
-            width: 60,
-            backgroundColor: '#2980b9',
-            borderRadius: 100,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: normalize(30),
-            marginLeft: normalize(290),
-          }}
-          onPress={this.gotoAddTodo}>
+        <TouchableOpacity style={Styles.addBtn} onPress={(this.gotoAddTodo)}>
           <Text style={{color: '#fff', fontSize: 30, fontWeight: '600'}}>
             +
           </Text>
